@@ -46,7 +46,7 @@ df1['email_ifood'] = df1['email_ifood'].astype(str)
 st.title("Formulário das Parças")
 
 with st.form("meu_forms"):
-    st.write("Formulário de Checagem de informações dos Alunos")
+    st.write("Formulário de checagem de informações dos alunos")
     cpf_input = st.text_input("Digite o CPF:")
     submitted = st.form_submit_button("Confira")
     
@@ -65,20 +65,26 @@ with st.form("meu_forms"):
             st.write("Nenhum usuário encontrado com o CPF:", cpf_input)
 st.write("Fora do Formulário")
 
-with st.form("meu_forms2"):
-    st.write("Formulário para escrever as informações dos Alunos")
+with st.form("meu_forms2",clear_on_submit=True):
+    st.write("Formulário para escrever as informações de atendimento dos alunos")
+    text = st.selectbox("Nº da semana do Atendimento", options=["Semana 0", "Semana 1", "Semana 2"])
+    text_0 = st.selectbox("O aluno é de qual turma?", options=["Turma 1", "Turma 2"])
+    text_1 = st.selectbox("Parça que atendeu:",options=['Fernanda','Marina', 'Renata', 'Eliane','Karina','Elaine'])
+    text_2 = st.selectbox("Disparador da conversa:",options=['Resposta ao Chatbot','Resposta ao Parça', 'Contato por conta própria'])
+    text_3 = st.selectbox("Desenvolveu conversa?",options=['Sim','Não'])
+    text_4 = st.selectbox("Já frequentou aula presencial?",options=['Sim, em mais de uma semana','Não','Sim, na semana 0', 'Sim, na semana 1'])
+    text_5 = st.selectbox("Reportou dificuldade?",options=['Não se aplica', 'Não tinha todas as informações necessárias','Unidade muito longe do local de residência', 'Prejuízo financeiro', 'Dificuldade com o conteúdo do curso', 'Sobrepõe com horário de alta demanda no trabalho', 'Não tenho dinheiro para me locomover ou me alimentar', 'Problema de saúde'])
+    text_6 = st.selectbox("Comentários:", options=["Não se aplica", "Questões sobre dia, horário ou endereço","Falta de informação", "Problemas de cadastro", " Vai numa próxima aula", "Problemas pessoais","Está tudo bem!", "Dúvidas sobre os R$ 60", "Elogios ao programa", "Dúvidas e comentários sobre aulas", "Benefícios iFood e Sesi" ])
+    text_7 = st.text_input("Detalhes do Aluno:")
+    text_8 = st.text_input("Observações do atendimento:")
 
-    text_1 = st.text_input("Teste 1 ")
-    text_2 = st.text_input("Teste 2 ")
-    text_3 = st.text_input("Teste 3 ")
-    
-    if st.form_submit_button("Adicionar nova linha"):
-        if text_1 and text_2 and text_3:
-            # Adicionando nova linha ao DataFrame existente
-            new_row = {'Nome': text_1, 'Idade': text_2, 'Profissão': text_3}
+
+    if st.form_submit_button("Submeter Resposta"):
+        if text and text_0 and text_1 and text_2 and text_3 and text_4 and text_5 and text_6 and text_6:
+            
+            new_row = {'Atendimento': text, 'Turma:': text_0,'Parça que atendeu:': text_1, 'Disparador da conversa:': text_2, 'Desenvolveu conversa?': text_3, 'Já frequentou aula presencial?': text_4, 'Reportou dificuldade?': text_5, "Comentários:": text_6, "Detalhes do Aluno:": text_7, "Observações do atendimento:": text_8}
             df2 = df2._append(new_row, ignore_index=True)
             
-            # Atualizando a planilha com o DataFrame modificado
             conn2.update(
                 worksheet="teste",
                 data=df2
