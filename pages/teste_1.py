@@ -42,35 +42,14 @@ df1['email_sesi'] = df1['email_sesi'].astype(str)
 
 st.title("Formulário das Parças")
 
-# Verificar se user_info já está armazenado no session_state
-if 'user_info' not in st.session_state:
-    st.session_state.user_info = None
-
-# Formulário de busca de informações
-with st.form("meu_forms"):
-    st.write("Formulário de checagem de informações dos alunos")
-    cpf_input = st.text_input("Digite o CPF:")
-    submitted = st.form_submit_button("Confira")
+# Formulário único para buscar CPF e preencher informações
+with st.form("formulario_completo", clear_on_submit=True):
+    st.write("Formulário de checagem e atendimento dos alunos")
     
-    if submitted:
-        # Buscar informações do usuário baseado no CPF
-        user_info = df1[df1['cpf'] == cpf_input]
-        if not user_info.empty:
-            st.write("Informações do usuário com CPF:", cpf_input)
-            st.markdown("- Nome: " + formatar_nome(user_info['Nome'].values[0]))
-            st.markdown("- Status: " + str(user_info['Status'].values[0]))
-            st.markdown("- Unidade: " + user_info['unidade_sesi'].values[0])
-            st.markdown("- E-mail: " + user_info['email_sesi'].values[0])
-            st.markdown("- Telefone: " + user_info['phone'].values[0])
-            # Armazenar as informações no session_state
-            st.session_state.user_info = user_info
-        else:
-            st.write("Nenhum usuário encontrado com o CPF:", cpf_input)
-            st.session_state.user_info = None
-
-# Formulário de preenchimento de informações adicionais
-with st.form("meu_forms2", clear_on_submit=True):
-    st.write("Formulário para escrever as informações de atendimento dos alunos")
+    # Parte 1: Buscar informações pelo CPF
+    cpf_input = st.text_input("Digite o CPF:")
+    
+    # Parte 2: Preenchimento do formulário adicional
     text = st.selectbox("Nº da semana do Atendimento", options=["Semana 0", "Semana 1", "Semana 2"])
     text_0 = st.selectbox("O aluno é de qual turma?", options=["Turma 1", "Turma 2"])
     text_1 = st.selectbox("Parça que atendeu:", options=['Fernanda', 'Marina', 'Renata', 'Eliane', 'Karina', 'Elaine'])
@@ -82,12 +61,14 @@ with st.form("meu_forms2", clear_on_submit=True):
     text_7 = st.text_input("Detalhes do Aluno:")
     text_8 = st.text_input("Observações do atendimento:")
 
-    # Botão para submeter os dados
+    # Botão para submeter
     if st.form_submit_button("Submeter Resposta"):
-        # Verifica se o CPF foi buscado anteriormente e se user_info está disponível
+        # Exibir o spinner enquanto os dados estão sendo gravados
         with st.spinner('Gravando dados, por favor aguarde...'):
-            if st.session_state.user_info is not None:
-                user_info = st.session_state.user_info
+            # Verifica se o CPF foi inserido e buscado no DataFrame
+            user_info = df1[df1['cpf'] == cpf_input]
+            
+            if not user_info.empty:
                 # Combina os dados do formulário com os dados buscados (df1)
                 new_row = {
                     'Nome': formatar_nome(user_info['Nome'].values[0]),
@@ -123,5 +104,5 @@ with st.form("meu_forms2", clear_on_submit=True):
                 st.rerun()
                 st.success("Informações atualizadas com sucesso!")
             else:
-                st.error("Nenhuma informação de CPF encontrada. Verifique antes de submeter.")
+                st.error("Nenhum usuário encontrado com o CPF informado.")
 
