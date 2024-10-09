@@ -22,26 +22,22 @@ def formatar_nome(nome):
     partes_formatadas = [parte.capitalize() for parte in partes]
     return ' '.join(partes_formatadas)
 
-conn1 = st.connection("gsheets1", type=GSheetsConnection)
-df1 = conn1.read(
-    worksheet="acompanhamento_geral_atual.",
+conn2 = st.connection("gsheets2", type=GSheetsConnection)
+df1 = conn2.read(
+    worksheet="dados-alunos",
     ttl="10m"
 )
 
-conn2 = st.connection("gsheets2", type=GSheetsConnection)
 df2 = conn2.read(
     worksheet="teste",
     ttl="10m"
 )
 
-colunas = ['Nome','Status','OBS','parceria_ifood','RM','unidade_sesi','CPF', 'email_sesi','phone','email_ifood','Semana 0\n05 a 09/08','1ª semana\n12 a 16/08','2ª semana\n19 a 23/08','3ª semana\n26 a 30/08','4ª semana\n02 a 06/09','5ª semana\n09 a 13/09','6ª semana\n16 a 20/09','já foi a alguma aula?','Foi 1x', 'Foi 2x', 'Foi 3x', 'Foi 4x',
-       'Foi 5x','Foi 6x','Já frenquentou alguma aula presencial? Se sim, qual?']
+colunas = ['Nome','Status','parceria_ifood','unidade_sesi','cpf', 'email_sesi','phone']
 
-df1['RM'] = df1['RM'].astype(str)
-df1['CPF'] = df1['CPF'].astype(str)
+df1['cpf'] = df1['cpf'].astype(str)
 df1['phone'] = df1['phone'].astype(str)
 df1['email_sesi'] = df1['email_sesi'].astype(str)
-df1['email_ifood'] = df1['email_ifood'].astype(str)
 
 st.title("Formulário das Parças")
 
@@ -52,18 +48,17 @@ with st.form("meu_forms"):
     
     if submitted:
         
-        user_info = df1[df1['CPF'] == cpf_input]
+        user_info = df1[df1['cpf'] == cpf_input]
         if not user_info.empty:
             st.write("Informações do usuário com CPF:", cpf_input)
             st.markdown("- Nome: " + formatar_nome(user_info['Nome'].values[0]))
             st.markdown("- Status: " + str(user_info['Status'].values[0]))
-            st.markdown("- Matricula: " + user_info['RM'].values[0])
             st.markdown("- Unidade: " + user_info['unidade_sesi'].values[0])
             st.markdown("- E-mail: " + user_info['email_sesi'].values[0])
             st.markdown("- Telefone: " + user_info['phone'].values[0])
         else:
             st.write("Nenhum usuário encontrado com o CPF:", cpf_input)
-st.write("Fora do Formulário")
+
 
 with st.form("meu_forms2",clear_on_submit=True):
     st.write("Formulário para escrever as informações de atendimento dos alunos")
