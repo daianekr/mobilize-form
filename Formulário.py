@@ -10,7 +10,7 @@ import plotly.express as px
 st.set_page_config(
     page_title="Mobilize<>Ifood",
     page_icon="📑",
-    layout="wide",
+    layout="centered",
     initial_sidebar_state="expanded",
     menu_items={
         'About': "# Formulário das Parças do Programa *Meu Diploma*"
@@ -24,7 +24,7 @@ def formatar_nome(nome):
 
 conn2 = st.connection("gsheets2", type=GSheetsConnection)
 
-# Ler os dados da planilha Google
+
 df1 = conn2.read(
     worksheet="dados-alunos",
     ttl="10m"
@@ -35,25 +35,23 @@ df2 = conn2.read(
     ttl="10m"
 )
 
-# Garantir que as colunas necessárias estão no formato correto
+
 df1['cpf'] = df1['cpf'].astype(str)
 df1['phone'] = df1['phone'].astype(str)
 df1['email_sesi'] = df1['email_sesi'].astype(str)
 
 st.title("Formulário das Parças")
 
-# Verificar se user_info já está armazenado no session_state
 if 'user_info' not in st.session_state:
     st.session_state.user_info = None
 
-# Formulário de busca de informações
+
 with st.form("meu_forms"):
     st.write("Formulário de checagem de informações dos alunos")
     cpf_input = st.text_input("Digite o CPF:")
     submitted = st.form_submit_button("Confira")
     
     if submitted:
-        # Buscar informações do usuário baseado no CPF
         user_info = df1[df1['cpf'] == cpf_input]
         if not user_info.empty:
             st.write("Informações do usuário com CPF:", cpf_input)
@@ -62,13 +60,13 @@ with st.form("meu_forms"):
             st.markdown("- Unidade: " + user_info['unidade_sesi'].values[0])
             st.markdown("- E-mail: " + user_info['email_sesi'].values[0])
             st.markdown("- Telefone: " + user_info['phone'].values[0])
-            # Armazenar as informações no session_state
+
             st.session_state.user_info = user_info
         else:
             st.write("Nenhum usuário encontrado com o CPF:", cpf_input)
             st.session_state.user_info = None
 
-# Formulário de preenchimento de informações adicionais
+
 with st.form("meu_forms2", clear_on_submit=True):
     st.write("Formulário para escrever as informações de atendimento dos alunos")
     text = st.selectbox("Nº da semana do Atendimento", options=["Semana 0", "Semana 1", "Semana 2"])
@@ -81,14 +79,15 @@ with st.form("meu_forms2", clear_on_submit=True):
     text_6 = st.selectbox("Comentários:", options=["Não se aplica", "Questões sobre dia, horário ou endereço", "Falta de informação", "Problemas de cadastro", "Vai numa próxima aula", "Problemas pessoais", "Está tudo bem!", "Dúvidas sobre os R$ 60", "Elogios ao programa", "Dúvidas e comentários sobre aulas", "Benefícios iFood e Sesi"])
     text_7 = st.text_input("Detalhes do Aluno:")
     text_8 = st.text_input("Observações do atendimento:")
+    text_9 = st.selectbox("Precisa encaminhar esse caso?", options = ["Não", "Sim", "Não se Aplica"])
 
-    # Botão para submeter os dados
+
     if st.form_submit_button("Submeter Resposta"):
-        # Verifica se o CPF foi buscado anteriormente e se user_info está disponível
+
         with st.spinner('Gravando dados, por favor aguarde...'):
             if st.session_state.user_info is not None:
                 user_info = st.session_state.user_info
-                # Combina os dados do formulário com os dados buscados (df1)
+
                 new_row = {
                     'Nome': formatar_nome(user_info['Nome'].values[0]),
                     'Status': user_info['Status'].values[0],
@@ -106,22 +105,21 @@ with st.form("meu_forms2", clear_on_submit=True):
                     'Reportou dificuldade?': text_5,
                     'Comentários': text_6,
                     'Detalhes do Aluno': text_7,
-                    'Observações do atendimento': text_8
+                    'Observações do atendimento': text_8,
+                    'Precisa encaminhar esse caso?': text_9
                 }
 
-                # Adicionar a nova linha ao DataFrame
                 df2 = df2._append(new_row, ignore_index=True)
 
-                # Atualizar a planilha com o novo DataFrame
                 conn2.update(
                     worksheet="teste",
                     data=df2
                 )
 
-                # Limpar o cache de dados e recarregar
                 st.cache_data.clear()
                 st.rerun()
                 st.success("Informações atualizadas com sucesso!")
             else:
                 st.error("Nenhuma informação de CPF encontrada. Verifique antes de submeter.")
 
+#id e preenchido em

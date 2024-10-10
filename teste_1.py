@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
-        'About': "# Formulário das Parças do Programa *Meu Diploma*"
+        'About': "# Formulário das Parças do Programa *Meu Diploma* Turma 1"
     }
 )
 
@@ -60,6 +60,7 @@ with st.form("formulario_completo", clear_on_submit=True):
     text_6 = st.selectbox("Comentários:", options=["Não se aplica", "Questões sobre dia, horário ou endereço", "Falta de informação", "Problemas de cadastro", "Vai numa próxima aula", "Problemas pessoais", "Está tudo bem!", "Dúvidas sobre os R$ 60", "Elogios ao programa", "Dúvidas e comentários sobre aulas", "Benefícios iFood e Sesi"])
     text_7 = st.text_input("Detalhes do Aluno:")
     text_8 = st.text_input("Observações do atendimento:")
+    text_9 = st.selectbox("Precisa encaminhar esse caso?", options = ["Não", "Sim", "Não se Aplica"])
 
     # Botão para submeter
     if st.form_submit_button("Submeter Resposta"):
@@ -87,7 +88,8 @@ with st.form("formulario_completo", clear_on_submit=True):
                     'Reportou dificuldade?': text_5,
                     'Comentários': text_6,
                     'Detalhes do Aluno': text_7,
-                    'Observações do atendimento': text_8
+                    'Observações do atendimento': text_8,
+                    'Precisa encaminhar esse caso?': text_9
                 }
 
                 # Adicionar a nova linha ao DataFrame
