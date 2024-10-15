@@ -44,7 +44,7 @@ conn2 = st.connection("gsheets2", type=GSheetsConnection)
 
 # Carregar dados das planilhas
 df1 = conn2.read(
-    worksheet="dados-alunos-rds",
+    worksheet="dados-alunos",
     ttl="10m"
 )
 
@@ -53,10 +53,10 @@ df2 = conn2.read(
     ttl="10m"
 )
 
-# Formatar colunas como strings
-df1['CPF'] = df1['CPF'].astype(str)
-df1['Celular'] = df1['Celular'].astype(str)
-df1['E-mail'] = df1['E-mail'].astype(str)
+# Formatar colunas como strings e limpar o CPF
+df1['CPF'] = df1['CPF'].astype(str).fillna("").str.strip().str.replace(r'\D', '', regex=True)  # Limpa CPF
+df1['phone'] = df1['phone'].astype(str).fillna("").str.strip()
+df1['email_sesi'] = df1['email_sesi'].astype(str).fillna("").str.strip()
 
 # Função de autenticação
 def check_password():
@@ -98,14 +98,14 @@ if check_password():
         submitted = st.form_submit_button("Confirma")
         
         if submitted:
-            user_info = df1[df1['CPF'] == cpf_input]
+            user_info = df1[df1['CPF'] == cpf_input]  # Usar 'CPF' em vez de 'cpf'
             if not user_info.empty:
                 st.write("Informações do aluno com CPF:", cpf_input)
-                st.markdown("- Nome: " + formatar_nome(user_info['Nome completo'].values[0]))
-                st.markdown("- Ciclo de estudos: " + str(user_info['Ciclo de estudos'].values[0]))
-                st.markdown("- Unidade: " + user_info['Unidade'].values[0])
-                st.markdown("- E-mail: " + user_info['E-mail'].values[0])
-                st.markdown("- Telefone: " + user_info['Celular'].values[0])
+                st.markdown("- Nome: " + formatar_nome(user_info['Nome'].values[0]))
+                st.markdown("- Status: " + str(user_info['Status'].values[0]))
+                st.markdown("- Unidade: " + user_info['unidade_sesi'].values[0])
+                st.markdown("- E-mail: " + user_info['email_sesi'].values[0])
+                st.markdown("- Telefone: " + user_info['phone'].values[0])
                 st.session_state.user_info = user_info
             else:
                 st.write("Nenhum aluno encontrado com o CPF:", cpf_input)
@@ -128,7 +128,6 @@ if check_password():
         text_7 = st.text_input("Detalhes do atendimento:")
         text_8 = st.text_input("Observações sobre o aluno:")
 
-
         text_9 = st.text_input("Precisa encaminhar esse caso?", help="Este campo é obrigatório para submissão.")
         
         if not text_9: 
@@ -145,11 +144,11 @@ if check_password():
                         # Adicionando nova linha com a data e hora do preenchimento
                         new_row = {
                             'Nome': formatar_nome(user_info['Nome'].values[0]),
-                            'Ciclo de estudos': user_info['Ciclo de estudos'].values[0],
-                            'Unidade': user_info['Unidade'].values[0],
-                            'CPF': user_info['CPF'].values[0],
+                            'Status': user_info['Status'].values[0],
+                            'Unidade': user_info['unidade_sesi'].values[0],
+                            'CPF': user_info['CPF'].values[0],  # Usar 'CPF' aqui
                             'E-mail': user_info['E-mail'].values[0],
-                            'Telefone': user_info['Celular'].values[0],
+                            'Telefone': user_info['phone'].values[0],
                             'Motivo da Mensagem:': text_2,
                             'Campanha atrelada:': text_3,
                             'Frequentou aula presencial?': frequentou_aula,
@@ -177,4 +176,3 @@ if check_password():
                         st.error("Nenhuma informação de CPF encontrada. Verifique antes de submeter.")
 else:
     st.write("Por favor, faça login para acessar o app.")
-
