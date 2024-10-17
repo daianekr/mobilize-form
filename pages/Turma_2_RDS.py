@@ -122,7 +122,7 @@ if check_password():
 
         # Se a resposta for "Sim", aparece a pergunta condicional
         if frequentou_aula == 'Sim':
-            quantas_vezes = st.selectbox("Quantas vezes?", options=['1x', '2x', '3x ou mais'])
+            quantas_vezes = st.selectbox("Quantas vezes?", options=[' ', '1x', '2x', '3x ou mais'])
 
         text_6 = st.selectbox("Comentários:", options=["Dúvidas sobre o curso", " Dúvidas sobre a gameficação", "Dúvidas e comentários sobre as aulas", "Problemas de cadastro", "Dificuldades financeiras", "Problemas pessoais ou de saúde"])
         text_7 = st.text_input("Detalhes do atendimento:")
