@@ -6,7 +6,7 @@ from streamlit_gsheets import GSheetsConnection
 import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px 
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import string
 
@@ -158,7 +158,7 @@ if check_password():
                             'Observações do atendimento': text_8,
                             'Precisa encaminhar esse caso?': text_9,  # Campo obrigatório
                             'Quem atendeu?': st.session_state.username,  # Usar o username logado
-                            'extract_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Data e hora de preenchimento
+                            'extract_at' : (datetime.now() - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S") # Data e hora de preenchimento
                         }
 
                         df2 = df2._append(new_row, ignore_index=True)
