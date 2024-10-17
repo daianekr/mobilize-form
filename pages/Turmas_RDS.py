@@ -147,7 +147,7 @@ if check_password():
                             'Status': user_info['Status'].values[0],
                             'Unidade': user_info['unidade_sesi'].values[0],
                             'CPF': user_info['CPF'].values[0],  # Usar 'CPF' aqui
-                            'E-mail': user_info['E-mail'].values[0],
+                            'E-mail': user_info['email_sesi'].values[0],
                             'Telefone': user_info['phone'].values[0],
                             'Motivo da Mensagem:': text_2,
                             'Campanha atrelada:': text_3,
