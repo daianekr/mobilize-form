@@ -42,10 +42,14 @@ df2 = conn2.read(
     ttl="10m"
 )
 
+df3 = conn2.read(
+    worksheet="dados-alunos-rds",
+    ttl="10m"
+)
 
-df1['CPF'] = df1['CPF'].astype(str).fillna("").str.strip().str.replace(r'\D', '', regex=True)  # Limpa CPF
-df1['phone'] = df1['phone'].astype(str).fillna("").str.strip()
-df1['email_sesi'] = df1['email_sesi'].astype(str).fillna("").str.strip()
+df3['CPF'] = df3['CPF'].apply(lambda x: str(int(x)) if isinstance(x, float) else str(x)).str.strip()
+df3['phone'] = df3['phone'].astype(str).fillna("").str.strip()
+df3['E-mail'] = df3['E-mail'].astype(str).fillna("").str.strip()
 
 
 def check_password():
@@ -84,13 +88,13 @@ if check_password():
         submitted = st.form_submit_button("Confirma")
         
         if submitted:
-            user_info = df1[df1['CPF'] == cpf_input] 
+            user_info = df3[df3['CPF'] == cpf_input] 
             if not user_info.empty:
                 st.write("Informações do aluno com CPF:", cpf_input)
                 st.markdown("- Nome: " + formatar_nome(user_info['Nome'].values[0]))
-                st.markdown("- Status: " + str(user_info['Status'].values[0]))
-                st.markdown("- Unidade: " + user_info['unidade_sesi'].values[0])
-                st.markdown("- E-mail: " + user_info['email_sesi'].values[0])
+                st.markdown("- Ciclo: " + str(user_info['Ciclo'].values[0]))
+                st.markdown("- Unidade: " + user_info['Unidade'].values[0])
+                st.markdown("- E-mail: " + user_info['E-mail'].values[0])
                 st.markdown("- Telefone: " + user_info['phone'].values[0])
                 st.session_state.user_info = user_info
             else:
