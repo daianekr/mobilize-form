@@ -48,7 +48,7 @@ df3 = conn2.read(
 )
 
 df3['CPF'] = df3['CPF'].apply(lambda x: str(int(x)) if isinstance(x, float) else str(x)).str.strip()
-df3['phone'] = df3['phone'].astype(str).fillna("").str.strip()
+df3['phone'] = df3['phone'].apply(lambda x: str(int(x)) if isinstance(x, float) else str(x)).str.strip()
 df3['E-mail'] = df3['E-mail'].astype(str).fillna("").str.strip()
 
 
@@ -130,10 +130,10 @@ if check_password():
 
                         new_row = {
                             'Nome': formatar_nome(user_info['Nome'].values[0]),
-                            'Status': user_info['Status'].values[0],
-                            'Unidade': user_info['unidade_sesi'].values[0],
+                            'Ciclo': user_info['Ciclo'].values[0],
+                            'Unidade': user_info['Unidade'].values[0],
                             'CPF': user_info['CPF'].values[0],
-                            'E-mail': user_info['email_sesi'].values[0],
+                            'E-mail': user_info['E-mail'].values[0],
                             'Telefone': user_info['phone'].values[0],
                             'Motivo da Mensagem:': text_2,
                             'Campanha atrelada:': text_3,
