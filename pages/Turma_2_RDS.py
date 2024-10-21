@@ -38,7 +38,7 @@ df1 = conn2.read(
 )
 
 df2 = conn2.read(
-    worksheet="teste",
+    worksheet="teste-turma-2-rds",
     ttl="10m"
 )
 
@@ -150,7 +150,7 @@ if check_password():
                         df2 = df2._append(new_row, ignore_index=True)
 
                         conn2.update(
-                            worksheet="teste",
+                            worksheet="teste-turma-2-rds",
                             data=df2
                         )
 
