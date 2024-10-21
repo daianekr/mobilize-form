@@ -10,19 +10,8 @@ from datetime import datetime, timedelta
 import random
 import string
 
+USER_CREDENTIALS = st.secrets["USER_CREDENTIALS"]
 
-# Usuários com senhas aleatórias
-USER_CREDENTIALS = {
-    "Fernanda": 'teste1',
-    "Marina": 'teste2',
-    "Renata": 'teste3',
-    "Eliane": 'teste4',
-    "Karina": 'teste5',
-    "Elaine": 'teste6',
-}
-
-
-# Configurações da página
 st.set_page_config(
     page_title="Mobilize<>Ifood",
     page_icon="📑",
@@ -33,16 +22,16 @@ st.set_page_config(
     }
 )
 
-# Função para formatar o nome corretamente
+
 def formatar_nome(nome):
     partes = nome.split()
     partes_formatadas = [parte.capitalize() for parte in partes]
     return ' '.join(partes_formatadas)
 
-# Conexão com Google Sheets
+
 conn2 = st.connection("gsheets2", type=GSheetsConnection)
 
-# Carregar dados das planilhas
+
 df1 = conn2.read(
     worksheet="dados-alunos",
     ttl="10m"
@@ -53,12 +42,12 @@ df2 = conn2.read(
     ttl="10m"
 )
 
-# Formatar colunas como strings e limpar o CPF
+
 df1['CPF'] = df1['CPF'].astype(str).fillna("").str.strip().str.replace(r'\D', '', regex=True)  # Limpa CPF
 df1['phone'] = df1['phone'].astype(str).fillna("").str.strip()
 df1['email_sesi'] = df1['email_sesi'].astype(str).fillna("").str.strip()
 
-# Função de autenticação
+
 def check_password():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
@@ -66,7 +55,6 @@ def check_password():
     if st.session_state.authenticated:
         return True
 
-    # Formulário de login
     st.title("Login")
 
     username = st.text_input("Nome")
@@ -75,7 +63,7 @@ def check_password():
     if st.button("Login"):
         if username in USER_CREDENTIALS and USER_CREDENTIALS[username] == password:
             st.session_state.authenticated = True
-            st.session_state.username = username  # Armazenar o username na sessão
+            st.session_state.username = username  
             st.success(f"Você está logada(o) como {username}")
             return True
         else:
@@ -83,22 +71,20 @@ def check_password():
 
     return False
 
-# Conteúdo principal do app
 if check_password():
-    # Mostrar conteúdo protegido após login
+
     st.title("Formulário das Parças")
 
     if 'user_info' not in st.session_state:
         st.session_state.user_info = None
 
-    # Formulário de consulta de alunos
     with st.form("meu_forms"):
         st.write("Formulário de checagem de informações dos alunos")
         cpf_input = st.text_input("Digite o CPF:")
         submitted = st.form_submit_button("Confirma")
         
         if submitted:
-            user_info = df1[df1['CPF'] == cpf_input]  # Usar 'CPF' em vez de 'cpf'
+            user_info = df1[df1['CPF'] == cpf_input] 
             if not user_info.empty:
                 st.write("Informações do aluno com CPF:", cpf_input)
                 st.markdown("- Nome: " + formatar_nome(user_info['Nome'].values[0]))
@@ -111,16 +97,13 @@ if check_password():
                 st.write("Nenhum aluno encontrado com o CPF:", cpf_input)
                 st.session_state.user_info = None
 
-    # Formulário de atendimento
     with st.form("meu_forms2", clear_on_submit=True):
         st.write("Formulário para escrever as informações de atendimento dos alunos")
 
         text_2 = st.selectbox("Motivo da Mensagem:", options=['Resposta a uma campanha', 'Resposta a uma parça', 'Contato por conta própria', 'Registro de disparo'])
         text_3 = st.selectbox("Campanha atrelada:", options=['Campanha 1', 'Campanha 2', 'Campanha 3', 'Campanha 3'])
-        # Pergunta se frequentou aula presencial (Sim ou Não)
         frequentou_aula = st.selectbox("Frequentou aula presencial?", options=['Sim', 'Não'])
 
-        # Se a resposta for "Sim", aparece a pergunta condicional
         if frequentou_aula == 'Sim':
             quantas_vezes = st.selectbox("Quantas vezes?", options=[' ', '1x', '2x', '3x ou mais'])
 
@@ -141,12 +124,11 @@ if check_password():
                     if st.session_state.user_info is not None:
                         user_info = st.session_state.user_info
 
-                        # Adicionando nova linha com a data e hora do preenchimento
                         new_row = {
                             'Nome': formatar_nome(user_info['Nome'].values[0]),
                             'Status': user_info['Status'].values[0],
                             'Unidade': user_info['unidade_sesi'].values[0],
-                            'CPF': user_info['CPF'].values[0],  # Usar 'CPF' aqui
+                            'CPF': user_info['CPF'].values[0],
                             'E-mail': user_info['email_sesi'].values[0],
                             'Telefone': user_info['phone'].values[0],
                             'Motivo da Mensagem:': text_2,
@@ -156,14 +138,13 @@ if check_password():
                             'Comentários': text_6,
                             'Detalhes do Aluno': text_7,
                             'Observações do atendimento': text_8,
-                            'Precisa encaminhar esse caso?': text_9,  # Campo obrigatório
-                            'Quem atendeu?': st.session_state.username,  # Usar o username logado
+                            'Precisa encaminhar esse caso?': text_9,  
+                            'Quem atendeu?': st.session_state.username,  
                             'extract_at' : (datetime.now() - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S") # Data e hora de preenchimento
                         }
 
                         df2 = df2._append(new_row, ignore_index=True)
 
-                        # Atualizar planilha
                         conn2.update(
                             worksheet="teste",
                             data=df2
