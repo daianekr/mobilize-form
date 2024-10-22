@@ -105,13 +105,13 @@ if check_password():
         st.write("Formulário para escrever as informações de atendimento dos alunos")
 
         text_2 = st.selectbox("Motivo da Mensagem:", options=['Resposta a uma campanha', 'Resposta a uma parça', 'Contato por conta própria', 'Registro de disparo'])
-        text_3 = st.selectbox("Campanha atrelada:", options=['Campanha 1', 'Campanha 2', 'Campanha 3', 'Campanha 3'])
+        text_3 = st.selectbox("Campanha atrelada:", options=['Não', 'Campanha 1', 'Campanha 2', 'Campanha 3', 'Campanha 3'])
         frequentou_aula = st.selectbox("Frequentou aula presencial?", options=['Sim', 'Não'])
 
         if frequentou_aula == 'Sim':
             quantas_vezes = st.selectbox("Quantas vezes?", options=[' ', '1x', '2x', '3x ou mais'])
 
-        text_6 = st.selectbox("Comentários:", options=["Dúvidas sobre o curso", " Dúvidas sobre a gameficação", "Dúvidas e comentários sobre as aulas", "Problemas de cadastro", "Dificuldades financeiras", "Problemas pessoais ou de saúde"])
+        text_6 = st.selectbox("Comentários:", options=["Dúvidas sobre o curso", " Dúvidas sobre a gamificação", "Dúvidas e comentários sobre as aulas", "Problemas de cadastro", "Dificuldades financeiras", "Problemas pessoais ou de saúde"])
         text_7 = st.text_input("Detalhes do atendimento:")
         text_8 = st.text_input("Observações sobre o aluno:")
 
