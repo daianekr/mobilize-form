@@ -161,8 +161,8 @@ if check_password():
                             'Frequentou aula presencial?': frequentou_aula,
                             'Quantas vezes?': quantas_vezes,
                             'Comentários': text_6,
-                            'Detalhes do Aluno': text_7,
-                            'Observações do atendimento': text_8,
+                            'Detalhes do Aluno': text_8,
+                            'Observações do atendimento': text_7,
                             'Precisa encaminhar esse caso?': text_9,
                             'Quem atendeu?': st.session_state.username,
                             'extract_at': (datetime.now() - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S")
