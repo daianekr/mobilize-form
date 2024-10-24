@@ -104,12 +104,15 @@ if check_password():
                 telefone_input = ""
 
             # Armazenar os valores nos estados da sessão
-            st.session_state.cpf_input = cpf_input
+            st.session_state.cpf_input = cpf_input  # Agora garantimos que o CPF digitado seja armazenado
             st.session_state.nome_input = nome_input
             st.session_state.ciclo_input = ciclo_input
             st.session_state.unidade_input = unidade_input
             st.session_state.email_input = email_input
             st.session_state.telefone_input = telefone_input
+
+    # Verificar se o CPF foi armazenado corretamente no estado da sessão
+    cpf_input = st.session_state.get('cpf_input', "")
 
     # Formulário para permitir edição manual, se necessário
     nome_input = st.text_input("Nome", value=st.session_state.get('nome_input', ''), key="nome_input_manual")
@@ -145,35 +148,38 @@ if check_password():
             else:
                 with st.spinner('Gravando dados, por favor aguarde...'):
                     # Verifica se há dados preenchidos no primeiro formulário (CPF encontrado ou preenchido manualmente)
-                    new_row = {
-                        'Nome': nome_input if nome_input else "",
-                        'Ciclo': ciclo_input if ciclo_input else "",
-                        'Unidade': unidade_input if unidade_input else "",
-                        'CPF': st.session_state.cpf_input,  # Sempre usar o CPF digitado
-                        'E-mail': email_input if email_input else "",
-                        'Telefone': telefone_input if telefone_input else "",
-                        'Motivo da Mensagem:': text_2,
-                        'Campanha atrelada:': text_3,
-                        'Frequentou aula presencial?': frequentou_aula,
-                        'Quantas vezes?': quantas_vezes,
-                        'Comentários': text_6,
-                        'Detalhes do Aluno': text_8,
-                        'Observações do atendimento': text_7,
-                        'Precisa encaminhar esse caso?': text_9,
-                        'Quem atendeu?': st.session_state.username,
-                        'extract_at': (datetime.now() - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S")
-                    }
+                    if cpf_input:  # Certifique-se de que o CPF está no estado da sessão
+                        new_row = {
+                            'Nome': nome_input if nome_input else "",
+                            'Ciclo': ciclo_input if ciclo_input else "",
+                            'Unidade': unidade_input if unidade_input else "",
+                            'CPF': cpf_input,  # Sempre usar o CPF digitado
+                            'E-mail': email_input if email_input else "",
+                            'Telefone': telefone_input if telefone_input else "",
+                            'Motivo da Mensagem:': text_2,
+                            'Campanha atrelada:': text_3,
+                            'Frequentou aula presencial?': frequentou_aula,
+                            'Quantas vezes?': quantas_vezes,
+                            'Comentários': text_6,
+                            'Detalhes do Aluno': text_7,
+                            'Observações do atendimento': text_8,
+                            'Precisa encaminhar esse caso?': text_9,
+                            'Quem atendeu?': st.session_state.username,
+                            'extract_at': (datetime.now() - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S")
+                        }
 
-                    # Atualizar os dados na planilha
-                    df2 = df2._append(new_row, ignore_index=True)
+                        # Atualizar os dados na planilha
+                        df2 = df2._append(new_row, ignore_index=True)
 
-                    conn2.update(
-                        worksheet="alunos-sem-cadastro",
-                        data=df2
-                    )
+                        conn2.update(
+                            worksheet="alunos-sem-cadastro",
+                            data=df2
+                        )
 
-                    st.cache_data.clear()
-                    st.rerun()
-                    st.success("Informações atualizadas com sucesso!")
+                        st.cache_data.clear()
+                        st.rerun()
+                        st.success("Informações atualizadas com sucesso!")
+                    else:
+                        st.error("CPF não foi encontrado ou preenchido. Verifique antes de submeter.")
 else:
     st.write("Por favor, faça login para acessar o app.")
