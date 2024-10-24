@@ -43,14 +43,13 @@ df2 = conn2.read(
 )
 
 df3 = conn2.read(
-    worksheet="dados-alunos-rds",
+    worksheet="dados-alunos",
     ttl="10m"
 )
 
 df3['CPF'] = df3['CPF'].apply(lambda x: str(int(x)) if isinstance(x, float) else str(x)).str.strip()
 df3['phone'] = df3['phone'].astype(str).fillna("").str.strip()
 df3['E-mail'] = df3['E-mail'].astype(str).fillna("").str.strip()
-
 
 def check_password():
     if "authenticated" not in st.session_state:
@@ -76,29 +75,40 @@ def check_password():
     return False
 
 if check_password():
-
     st.title("Formulário das Parças")
 
     if 'user_info' not in st.session_state:
         st.session_state.user_info = None
 
+    # Definir variáveis vazias por padrão para garantir que existam
+    nome_input = ""
+    ciclo_input = ""
+    unidade_input = ""
+    email_input = ""
+    telefone_input = ""
+
     with st.form("meu_forms"):
         st.write("Formulário de checagem de informações dos alunos")
         cpf_input = st.text_input("Digite o CPF:")
         submitted = st.form_submit_button("Confirma")
-        
+
         if submitted:
-            user_info = df3[df3['CPF'] == cpf_input] 
+            user_info = df3[df3['CPF'] == cpf_input]
             if not user_info.empty:
                 st.write("Informações do aluno com CPF:", cpf_input)
-                st.markdown("- Nome: " + formatar_nome(user_info['Nome'].values[0]))
-                st.markdown("- Ciclo: " + str(user_info['Ciclo'].values[0]))
-                st.markdown("- Unidade: " + user_info['Unidade'].values[0])
-                st.markdown("- E-mail: " + user_info['E-mail'].values[0])
-                st.markdown("- Telefone: " + user_info['phone'].values[0])
+                nome_input = st.text_input("Nome", value=formatar_nome(user_info['Nome'].values[0]))
+                ciclo_input = st.text_input("Ciclo", value=str(user_info['Ciclo'].values[0]))
+                unidade_input = st.text_input("Unidade", value=user_info['Unidade'].values[0])
+                email_input = st.text_input("E-mail", value=user_info['E-mail'].values[0])
+                telefone_input = st.text_input("Telefone", value=user_info['phone'].values[0])
                 st.session_state.user_info = user_info
             else:
-                st.write("Nenhum aluno encontrado com o CPF:", cpf_input)
+                st.warning("Nenhum aluno encontrado com o CPF. Preencha os campos manualmente.")
+                nome_input = st.text_input("Nome")
+                ciclo_input = st.text_input("Ciclo")
+                unidade_input = st.text_input("Unidade")
+                email_input = st.text_input("E-mail")
+                telefone_input = st.text_input("Telefone")
                 st.session_state.user_info = None
 
     with st.form("meu_forms2", clear_on_submit=True):
@@ -125,39 +135,34 @@ if check_password():
                 st.error("Por favor, preencha o campo 'Precisa encaminhar esse caso?' para submeter o formulário.")
             else:
                 with st.spinner('Gravando dados, por favor aguarde...'):
-                    if st.session_state.user_info is not None:
-                        user_info = st.session_state.user_info
+                    new_row = {
+                        'Nome': formatar_nome(nome_input),
+                        'Ciclo': ciclo_input,
+                        'Unidade': unidade_input,
+                        'CPF': cpf_input,
+                        'E-mail': email_input,
+                        'Telefone': telefone_input,
+                        'Motivo da Mensagem:': text_2,
+                        'Campanha atrelada:': text_3,
+                        'Frequentou aula presencial?': frequentou_aula,
+                        'Quantas vezes?': quantas_vezes if frequentou_aula == 'Sim' else '',
+                        'Comentários': text_6,
+                        'Detalhes do Aluno': text_7,
+                        'Observações do atendimento': text_8,
+                        'Precisa encaminhar esse caso?': text_9,
+                        'Quem atendeu?': st.session_state.username,
+                        'extract_at' : (datetime.now() - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S")
+                    }
 
-                        new_row = {
-                            'Nome': formatar_nome(user_info['Nome'].values[0]),
-                            'Ciclo': user_info['Ciclo'].values[0],
-                            'Unidade': user_info['Unidade'].values[0],
-                            'CPF': user_info['CPF'].values[0],
-                            'E-mail': user_info['E-mail'].values[0],
-                            'Telefone': user_info['phone'].values[0],
-                            'Motivo da Mensagem:': text_2,
-                            'Campanha atrelada:': text_3,
-                            'Frequentou aula presencial?': frequentou_aula,
-                            'Quantas vezes?': quantas_vezes if frequentou_aula == 'Sim' else '',
-                            'Comentários': text_6,
-                            'Detalhes do Aluno': text_7,
-                            'Observações do atendimento': text_8,
-                            'Precisa encaminhar esse caso?': text_9,  
-                            'Quem atendeu?': st.session_state.username,  
-                            'extract_at' : (datetime.now() - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S") # Data e hora de preenchimento
-                        }
+                    df2 = df2._append(new_row, ignore_index=True)
 
-                        df2 = df2._append(new_row, ignore_index=True)
+                    conn2.update(
+                        worksheet="teste",
+                        data=df2
+                    )
 
-                        conn2.update(
-                            worksheet="teste",
-                            data=df2
-                        )
-
-                        st.cache_data.clear()
-                        st.rerun()
-                        st.success("Informações atualizadas com sucesso!")
-                    else:
-                        st.error("Nenhuma informação de CPF encontrada. Verifique antes de submeter.")
+                    st.cache_data.clear()
+                    st.rerun()
+                    st.success("Informações atualizadas com sucesso!")
 else:
     st.write("Por favor, faça login para acessar o app.")
