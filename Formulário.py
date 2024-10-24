@@ -104,11 +104,11 @@ if check_password():
                 st.session_state.user_info = user_info
             else:
                 st.warning("Nenhum aluno encontrado com o CPF. Preencha os campos manualmente.")
-                nome_input = st.text_input("Nome")
-                ciclo_input = st.text_input("Ciclo")
-                unidade_input = st.text_input("Unidade")
-                email_input = st.text_input("E-mail")
-                telefone_input = st.text_input("Telefone")
+                nome_input = st.text_input("Nome", value="")
+                ciclo_input = st.text_input("Ciclo", value="")
+                unidade_input = st.text_input("Unidade", value="")
+                email_input = st.text_input("E-mail", value="")
+                telefone_input = st.text_input("Telefone", value="")
                 st.session_state.user_info = None
 
     with st.form("meu_forms2", clear_on_submit=True):
@@ -135,6 +135,7 @@ if check_password():
                 st.error("Por favor, preencha o campo 'Precisa encaminhar esse caso?' para submeter o formulário.")
             else:
                 with st.spinner('Gravando dados, por favor aguarde...'):
+                    # Verifica se há dados do primeiro formulário (CPF encontrado ou preenchido manualmente)
                     new_row = {
                         'Nome': formatar_nome(nome_input),
                         'Ciclo': ciclo_input,
