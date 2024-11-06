@@ -47,9 +47,9 @@ df3 = conn2.read(
     ttl="10m"
 )
 
-df3['CPF'] = df3['CPF'].apply(lambda x: str(int(x)) if isinstance(x, float) else str(x)).str.strip()
-df3['phone'] = df3['phone'].astype(str).fillna("").str.strip()
-df3['E-mail'] = df3['E-mail'].astype(str).fillna("").str.strip()
+# df3['CPF'] = df3['CPF'].apply(lambda x: str(int(x)) if isinstance(x, float) else str(x)).str.strip()
+# df3['phone'] = df3['phone'].astype(str).fillna("").str.strip()
+# df3['E-mail'] = df3['E-mail'].astype(str).fillna("").str.strip()
 
 def check_password():
     if "authenticated" not in st.session_state:
