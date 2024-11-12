@@ -33,7 +33,7 @@ conn2 = st.connection("gsheets2", type=GSheetsConnection)
 
 
 df1 = conn2.read(
-    worksheet="dados-alunos",
+    worksheet="turma-1",
     ttl="10m"
 )
 
@@ -43,7 +43,7 @@ df2 = conn2.read(
 )
 
 df3 = conn2.read(
-    worksheet="dados-alunos",
+    worksheet="turma-1",
     ttl="10m"
 )
 

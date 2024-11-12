@@ -33,7 +33,7 @@ conn2 = st.connection("gsheets2", type=GSheetsConnection)
 
 
 df1 = conn2.read(
-    worksheet="dados-alunos",
+    worksheet="turma-1",
     ttl="10m"
 )
 
@@ -43,12 +43,12 @@ df2 = conn2.read(
 )
 
 df3 = conn2.read(
-    worksheet="dados-alunos-rds",
+    worksheet="turma-2",
     ttl="10m"
 )
 
-df3['CPF'] = df3['CPF'].apply(lambda x: str(int(x)) if isinstance(x, float) else str(x)).str.strip()
-df3['phone'] = df3['phone'].apply(lambda x: str(int(x)) if isinstance(x, float) else str(x)).str.strip()
+df3['CPF'] = df3['CPF'].apply(lambda x: str(int(x)) if isinstance(x, float) and not pd.isna(x) else str(x)).str.strip()
+df3['phone'] = df3['phone'].apply(lambda x: str(int(x)) if isinstance(x, float) and not pd.isna(x) else str(x)).str.strip()
 df3['E-mail'] = df3['E-mail'].astype(str).fillna("").str.strip()
 
 
