@@ -51,6 +51,7 @@ df3['CPF'] = df3['CPF'].apply(lambda x: str(int(x)) if isinstance(x, float) and 
 df3['phone'] = df3['phone'].apply(lambda x: str(int(x)) if isinstance(x, float) and not pd.isna(x) else str(x)).str.strip()
 df3['E-mail'] = df3['E-mail'].astype(str).fillna("").str.strip()
 df3['Turma'] = df3['Turma'].astype(str).fillna("").str.strip()
+df3['Já frenquentou alguma aula presencial? Se sim, qual?'].astype(str).fillna("").str.strip()
 
 def check_password():
     if "authenticated" not in st.session_state:
@@ -97,6 +98,7 @@ if check_password():
                 st.markdown("- E-mail: " + user_info['E-mail'].values[0])
                 st.markdown("- Telefone: " + user_info['phone'].values[0])
                 st.markdown("- Turma: " + user_info['Turma'].values[0])
+                st.markdown("- Já frequentou aula presencial? Se sim, qual? " + user_info['Já frenquentou alguma aula presencial? Se sim, qual?'].values[0])
                 st.session_state.user_info = user_info
             else:
                 st.write("Nenhum aluno encontrado com o CPF:", cpf_input)
