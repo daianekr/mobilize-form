@@ -50,7 +50,7 @@ df3 = conn2.read(
 df3['CPF'] = df3['CPF'].apply(lambda x: str(int(x)) if isinstance(x, float) and not pd.isna(x) else str(x)).str.strip()
 df3['phone'] = df3['phone'].apply(lambda x: str(int(x)) if isinstance(x, float) and not pd.isna(x) else str(x)).str.strip()
 df3['E-mail'] = df3['E-mail'].astype(str).fillna("").str.strip()
-
+df3['Turma'] = df3['Turma'].astype(str).fillna("").str.strip()
 
 def check_password():
     if "authenticated" not in st.session_state:
@@ -96,6 +96,7 @@ if check_password():
                 st.markdown("- Unidade: " + user_info['Unidade'].values[0])
                 st.markdown("- E-mail: " + user_info['E-mail'].values[0])
                 st.markdown("- Telefone: " + user_info['phone'].values[0])
+                st.markdown("- Turma: " + user_info['Turma'].values[0])
                 st.session_state.user_info = user_info
             else:
                 st.write("Nenhum aluno encontrado com o CPF:", cpf_input)
@@ -135,6 +136,7 @@ if check_password():
                             'CPF': user_info['CPF'].values[0],
                             'E-mail': user_info['E-mail'].values[0],
                             'Telefone': user_info['phone'].values[0],
+                            'Turma': user_info['Turma'].values[0],
                             'Motivo da Mensagem:': text_2,
                             'Campanha atrelada:': text_3,
                             'Frequentou aula presencial?': frequentou_aula,
